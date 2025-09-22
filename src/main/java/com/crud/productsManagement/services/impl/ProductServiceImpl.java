@@ -21,7 +21,7 @@ public class ProductServiceImpl implements ProductService {
     public Product getProduct(Long productId) {
         //More Business Logic
         if(productRepository.findById(productId).isEmpty()){
-            throw new ProductNotFoundException("Requested Product does not exist!");
+            throw new ProductNotFoundException("Requested Product with id "+productId+" does not exist!");
         }
         return productRepository.findById(productId).get();
     }
@@ -46,7 +46,7 @@ public class ProductServiceImpl implements ProductService {
             productRepository.save(existingProduct);
 
         }else{
-            throw new ProductNotFoundException("The Product of id "+id+" is not found");
+            throw new ProductNotFoundException("The Product with id "+id+" is not found");
         }
     }
 
@@ -55,7 +55,7 @@ public class ProductServiceImpl implements ProductService {
 
         //More Business Logic
         if(productRepository.findById(productId).isEmpty()){
-            throw new ProductNotFoundException("The Product of id "+productId+" does not Exist!");
+            throw new ProductNotFoundException("The Product with id "+productId+" does not Exist!");
         }else {
             productRepository.deleteById(productId);
         }
