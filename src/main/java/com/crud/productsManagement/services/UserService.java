@@ -1,13 +1,16 @@
 package com.crud.productsManagement.services;
 
+import com.crud.productsManagement.dtos.AddUserDto;
+import com.crud.productsManagement.dtos.UserDto;
 import com.crud.productsManagement.entities.Users;
 
 public interface UserService {
-    void createUser(Users user);
 
-    Users getUser(Long id);
+    UserDto createUser(AddUserDto user);
 
-    Users updateUser(Users user, Long id);
+    UserDto getUser(Long id);
 
-    Users deleteUser(Long id);
+    Users updateUser(Long id, AddUserDto user);
+
+    void deleteUser(Long id);
 }

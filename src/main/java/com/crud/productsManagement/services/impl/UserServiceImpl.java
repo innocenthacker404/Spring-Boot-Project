@@ -1,8 +1,12 @@
 package com.crud.productsManagement.services.impl;
 
+import com.crud.productsManagement.dtos.AddUserDto;
+import com.crud.productsManagement.dtos.UserDto;
 import com.crud.productsManagement.entities.Users;
+import com.crud.productsManagement.exceptions.UserNotFoundException;
 import com.crud.productsManagement.repositories.UserRepository;
 import com.crud.productsManagement.services.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,21 +18,25 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ModelMapper mapperModel;
+
     @Override
-    public void createUser(Users user) {
-        userRepository.save(user);
+    public UserDto createUser(AddUserDto addUser) {
+       Users newUser = mapperModel.map(addUser, Users.class);
+       Users user = userRepository.save(newUser);
+       return mapperModel.map(user, UserDto.class);
     }
 
     @Override
-    public Users getUser(Long id) {
-        if(userRepository.findById(id).isEmpty()){
-            throw new IllegalArgumentException("The user does not exist!");
-        }
-        return userRepository.findById(id).get();
+    public UserDto getUser(Long id) {
+        Users user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("user does not exist with ID: "+id));
+        return mapperModel.map(user, UserDto.class);
     }
 
     @Override
-    public Users updateUser(Users updatedUser, Long id) {
+    public Users updateUser(Long id, AddUserDto updatedUser) {
         Optional<Users> userOpt = userRepository.findById(id);
         if(userOpt.isPresent()){
             Users existUser = userOpt.get();
@@ -36,15 +44,15 @@ public class UserServiceImpl implements UserService {
             existUser.setPassword(updatedUser.getPassword());
             return userRepository.save(existUser);
         }else{
-            throw new IllegalArgumentException("User with id "+id+" is not exists!");
+            throw new UserNotFoundException("User with id "+id+" does not exist!");
         }
     }
 
     @Override
-    public Users deleteUser(Long id) {
+    public void deleteUser(Long id) {
         if(userRepository.findById(id).isPresent()){
             userRepository.deleteById(id);
         }
-        throw new IllegalArgumentException("User with id "+id+" is not found");
+        throw new UserNotFoundException("User with id "+id+" is not found");
     }
 }
