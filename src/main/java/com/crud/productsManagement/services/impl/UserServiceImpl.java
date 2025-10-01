@@ -10,6 +10,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,20 +20,20 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private ModelMapper mapperModel;
+    private ModelMapper modelMapper;
 
     @Override
     public UserDto createUser(AddUserDto addUser) {
-       Users newUser = mapperModel.map(addUser, Users.class);
+       Users newUser = modelMapper.map(addUser, Users.class);
        Users user = userRepository.save(newUser);
-       return mapperModel.map(user, UserDto.class);
+       return modelMapper.map(user, UserDto.class);
     }
 
     @Override
     public UserDto getUser(Long id) {
         Users user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("user does not exist with ID: "+id));
-        return mapperModel.map(user, UserDto.class);
+        return modelMapper.map(user, UserDto.class);
     }
 
     @Override
@@ -50,9 +51,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
-        if(userRepository.findById(id).isPresent()){
-            userRepository.deleteById(id);
-        }
-        throw new UserNotFoundException("User with id "+id+" is not found");
+       userRepository.findById(id)
+               .orElseThrow(() -> new UserNotFoundException("User is not found with ID: "+id));
+
+       userRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Users> getAll() {
+        return userRepository.findAll();
+    }
+
+    public UserDto getByUserName(String userName) {
+        Users user = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        return modelMapper.map(user, UserDto.class);
     }
 }

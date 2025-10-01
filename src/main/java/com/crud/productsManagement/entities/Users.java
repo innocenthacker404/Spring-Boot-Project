@@ -5,8 +5,7 @@ import lombok.*;
 
 @Entity
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name="users")
 public class Users{
 
     @Id
@@ -18,6 +17,14 @@ public class Users{
 
     @Column(nullable = false)
     public String password;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getUserName() {
         return userName;

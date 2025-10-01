@@ -1,4 +1,6 @@
 package com.crud.productsManagement.exceptions;
 
-public record UserException() {
+import org.springframework.http.HttpStatus;
+
+public record UserException(String message, Throwable throwable, HttpStatus httpStatus) {
 }
